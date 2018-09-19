@@ -1,5 +1,7 @@
 package com.javalec.spring_board.controller;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,27 @@ public class BController {
 	
 	BAction action;
 	public JdbcTemplate template; 
+	
+	@RequestMapping("/login")
+	public String login(Locale locale, Model model) {
+		return "security/login";
+	}
+	
+	@RequestMapping("/logout")
+	public String logout(Locale locale, Model model) {
+		return "security/logout";
+	}
+	
+	@RequestMapping("/welcome")
+	public String welcome(Locale locale, Model model) {
+		return "security/welcome";
+	}
+	
+	@RequestMapping("/loginForm")
+	public String loginForm(Locale locale, Model model) {
+		System.out.println("dd");
+		return "security/loginForm";
+	}
 	
 	@Autowired
 	public void setTemplate(JdbcTemplate template) {
