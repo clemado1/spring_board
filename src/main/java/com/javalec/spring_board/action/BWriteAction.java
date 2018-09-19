@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.ui.Model;
 
-import com.javalec.spring_board.dao.BDao;
+import com.javalec.spring_board.dao.BDaoc;
 
 public class BWriteAction implements BAction {
 
@@ -21,7 +21,7 @@ public class BWriteAction implements BAction {
 		String bTitle = request.getParameter("bTitle");
 		String bContent = request.getParameter("bContent");
 		
-		BDao dao = new BDao();
+		BDaoc dao = new BDaoc();
 		dao.write(bName, bTitle, bContent);
 		
 	}

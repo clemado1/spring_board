@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.ui.Model;
 
-import com.javalec.spring_board.dao.BDao;
+import com.javalec.spring_board.dao.BDaoc;
 import com.javalec.spring_board.dto.BDto;
 
 public class BReplyViewAction implements BAction{
@@ -18,7 +18,7 @@ public class BReplyViewAction implements BAction{
 		HttpServletRequest request = (HttpServletRequest) map.get("request");
 		String bId = request.getParameter("bId");
 		
-		BDao dao = new BDao();
+		BDaoc dao = new BDaoc();
 		BDto dto = dao.replyView(bId);
 		
 		model.addAttribute("reply_view", dto);

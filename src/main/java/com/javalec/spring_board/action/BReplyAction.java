@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.ui.Model;
 
-import com.javalec.spring_board.dao.BDao;
+import com.javalec.spring_board.dao.BDaoc;
 
 public class BReplyAction implements BAction {
 
@@ -24,7 +24,7 @@ public class BReplyAction implements BAction {
 		String bStep = request.getParameter("bStep");
 		String bIndent = request.getParameter("bIndent");
 		
-		BDao dao = new BDao();
+		BDaoc dao = new BDaoc();
 		dao.reply(bId, bTitle, bName, bContent, bGroup, bStep, bIndent);
 		
 	}

@@ -11,8 +11,8 @@
             password-parameter="userpw"
    		 />
    		<security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login"/>
-		<security:intercept-url pattern="/login*" access="hasRole('ROLE_USER')"/>
-		<security:intercept-url pattern="/welcome*" access="hasRole('ROLE_ADMIN')"/>
+		<security:intercept-url pattern="/login" access="hasRole('ROLE_USER')"/>
+		<security:intercept-url pattern="/welcome" access="hasRole('ROLE_ADMIN')"/>
 		 
 	</security:http>
 	

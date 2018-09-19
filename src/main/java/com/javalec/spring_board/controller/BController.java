@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import com.javalec.spring_board.action.BModifyAction;
 import com.javalec.spring_board.action.BReplyAction;
 import com.javalec.spring_board.action.BReplyViewAction;
 import com.javalec.spring_board.action.BWriteAction;
+import com.javalec.spring_board.dao.BDao;
 import com.javalec.spring_board.util.Constant;
 
 @Controller
@@ -26,6 +28,9 @@ public class BController {
 	
 	BAction action;
 	public JdbcTemplate template; 
+	
+	@Autowired
+	private SqlSession sqlSession;
 	
 	@RequestMapping("/login")
 	public String login(Locale locale, Model model) {
@@ -44,24 +49,22 @@ public class BController {
 	
 	@RequestMapping("/loginForm")
 	public String loginForm(Locale locale, Model model) {
-		System.out.println("dd");
 		return "security/loginForm";
 	}
 	
-	@Autowired
-	public void setTemplate(JdbcTemplate template) {
-		this.template = template;
-		Constant.template = this.template;
-	}
-	
+//	@Autowired
+//	public void setTemplate(JdbcTemplate template) {
+//		this.template = template;
+//		Constant.template = this.template;
+//	}
+//	
 	@RequestMapping("/list")
 	public String list(Model model) {
-		System.out.println("list()");
+		BDao dao = sqlSession.getMapper(BDao.class);
 		
-		action = new BListAction();
-		action.execute(model);
+		model.addAttribute("list", dao.listDao());
 		
-		return "list";
+		return "/list";
 	}
 	
 	@RequestMapping("/write_view")
