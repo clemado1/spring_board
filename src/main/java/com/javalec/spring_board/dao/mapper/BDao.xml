@@ -4,17 +4,68 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.javalec.spring_board.dao.BDao">
-	<select id="listDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, BNAME, BTITLE, BDATE, BHIT, BGROUP, BSTEP, BINDENT FROM BOARD ORDER BY BGROUP DESC, BSTEP ASC
+	<select id="findBId" resultType="Integer">
+		SELECT MAX(BID) FROM BOARD
 	</select>
 	
+	<select id="findRId" resultType="Integer">
+		SELECT MAX(BID) FROM RBOARD
+	</select>
+	
+	<select id="listCount" resultType="Integer">
+		SELECT COUNT(*) FROM BOARD
+	</select>
+	
+	<select id="listDao" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC
+	</select>
+	
+	<select id="searchList" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50), DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC
+	</select>
+	
+	<select id="viewDao" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT * FROM BOARD WHERE BID = #{param1}
+	</select>
+	
+	<select id="viewReply" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT * FROM RBOARD WHERE BGROUP = #{param1} ORDER BY HIT DESC, BREPLY ASC, BSTEP ASC 
+	</select>
 	
 	<insert id="writeDao">
+		INSERT INTO board VALUES(#{param1}, #{param2}, #{param3}, #{param4}, SYSDATE(), 0, #{param1}, #{param1}, 1)
 	</insert>
 	
+	<insert id="replyDao">
+		INSERT INTO RBOARD(BID, NAME, CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param1}, 2)
+	</insert>
+	
+	<insert id="commentDao">
+		INSERT INTO RBOARD(BID, NAME, CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param5}, 3)
+	</insert>
+	
+	<update id="upHit">
+		UPDATE board SET HIT = HIT + 1 WHERE BID = #{param1}
+	</update>
+	
+	<update id="upReply">
+		UPDATE board SET BREPLY = BREPLY + 1 WHERE BID = #{param1}
+	</update>
+	
+	<update id="upRHit">
+		UPDATE RBOARD SET HIT = HIT + 1 WHERE BID = #{param1}
+	</update>
+	
+	<update id="modifyDao">
+		UPDATE board SET TITLE = #{param2}, CONTENT = #{param3} WHERE bid = #{param1}
+	</update>
 	
 	<delete id="deleteDao">
+		DELETE FROM board WHERE bid = #{param1}
 	</delete>
 	
+	<delete id="deleteReply">
+		DELETE FROM RBOARD WHERE BGROUP = #{param1}
+	</delete>
 	
 </mapper>

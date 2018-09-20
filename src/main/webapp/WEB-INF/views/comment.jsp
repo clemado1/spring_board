@@ -8,22 +8,16 @@
 </head>
 <body>
 <table width="500" cellpadding="0" cellspacing="0" border="1">
-		<form action="write" method="post">
+		<form action="comment" method="post">
 		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
-			<tr>
-				<td> 이름 </td>
-				<td> <input type="text" name="bName" size = "50"> </td>
-			</tr>
-			<tr>
-				<td> 제목 </td>
-				<td> <input type="text" name="bTitle" size = "50"> </td>
-			</tr>
+		<input type="hidden" name="bId" value="${bId}">
+		<input type="hidden" name="bReply" value="${bReply}">
 			<tr>
 				<td> 내용 </td>
-				<td> <textarea name="bContent" rows="10" ></textarea> </td>
+				<td> <textarea rows="10"  name="bContent"></textarea></td>
 			</tr>
 			<tr >
-				<td colspan="2"> <input type="submit" value="입력"> &nbsp;&nbsp; <a href="list.do">목록보기</a></td>
+				<td colspan="2"><input type="submit" value="답변"> <a href="list" >목록</a></td>
 			</tr>
 		</form>
 	</table>

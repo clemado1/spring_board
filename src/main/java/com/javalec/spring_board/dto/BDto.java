@@ -4,84 +4,103 @@ import java.sql.Timestamp;
 
 public class BDto {
 	int bId;
-	String bName;
-	String bTitle;
-	String bContent;
-	Timestamp bDate;
-	int bHit;
+	String name;
+	String title;
+	String content;
+	Timestamp date;
+	int hit;
 	int bGroup;
+	int bReply;
 	int bStep;
-	int bIndent;
 	
 	public BDto() {
 		
 	}
 	
-	public BDto(int bId, String bName, String bTitle, String bContent, Timestamp bDate, int bHit, int bGroup, int bStep, int bIndent) {
+	public BDto(int bId, String name, String title, String content, Timestamp date, int hit, int bGroup, int bReply,
+			int bStep) {
+		super();
 		this.bId = bId;
-		this.bName = bName;
-		this.bTitle = bTitle;
-		this.bContent = bContent;
-		this.bDate = bDate;
-		this.bHit = bHit;
+		this.name = name;
+		this.title = title;
+		this.content = content;
+		this.date = date;
+		this.hit = hit;
 		this.bGroup = bGroup;
+		this.bReply = bReply;
 		this.bStep = bStep;
-		this.bIndent = bIndent;
 	}
 	
 	public int getbId() {
 		return bId;
 	}
+
 	public void setbId(int bId) {
 		this.bId = bId;
 	}
-	public String getbName() {
-		return bName;
+
+	public String getName() {
+		return name;
 	}
-	public void setbName(String bName) {
-		this.bName = bName;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String getbTitle() {
-		return bTitle;
+
+	public String getTitle() {
+		return title;
 	}
-	public void setbTitle(String bTitle) {
-		this.bTitle = bTitle;
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
-	public String getbContent() {
-		return bContent;
+
+	public String getContent() {
+		return content;
 	}
-	public void setbContent(String bContent) {
-		this.bContent = bContent;
+
+	public void setContent(String content) {
+		this.content = content;
 	}
-	public Timestamp getbDate() {
-		return bDate;
+
+	public Timestamp getDate() {
+		return date;
 	}
-	public void setbDate(Timestamp bDate) {
-		this.bDate = bDate;
+
+	public void setDate(Timestamp date) {
+		this.date = date;
 	}
-	public int getbHit() {
-		return bHit;
+
+	public int getHit() {
+		return hit;
 	}
-	public void setbHit(int bHit) {
-		this.bHit = bHit;
+
+	public void setHit(int hit) {
+		this.hit = hit;
 	}
+
 	public int getbGroup() {
 		return bGroup;
 	}
+
 	public void setbGroup(int bGroup) {
 		this.bGroup = bGroup;
 	}
+
+	public int getbReply() {
+		return bReply;
+	}
+
+	public void setbReply(int bReply) {
+		this.bReply = bReply;
+	}
+
 	public int getbStep() {
 		return bStep;
 	}
+
 	public void setbStep(int bStep) {
 		this.bStep = bStep;
-	}
-	public int getbIndent() {
-		return bIndent;
-	}
-	public void setbIndent(int bIndent) {
-		this.bIndent = bIndent;
 	}
 	
 	
