@@ -16,38 +16,18 @@
 
     <!-- Custom styles for this template -->
     <link type="text/css" href="${pageContext.request.contextPath}/resources/css/blog-home.css" rel="stylesheet">
-
+    
+	 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   </head>
 
   <body>
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#">괴발개발</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Join</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Login</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<script type="text/javascript">
+    jQuery.noConflict();
+    var j$ = jQuery;
+</script>
+  
+  
+  <%@ include file="/WEB-INF/views/include/nav.jsp" %>
 
     <!-- Page Content -->
     <div class="container">
@@ -74,80 +54,53 @@
               <a href="#">Start Bootstrap</a>
             </div>
           </div>
-		</c:forEach>
-
-          <!-- Pagination 1,2,3,4,5로 변경-->
+          </c:forEach>
+          
           <ul class="pagination justify-content-center mb-4">
-            <li class="page-item">
-              <a class="page-link" href="#">&larr; Older</a>
-            </li>
-            <li class="page-item disabled">
-              <a class="page-link" href="#">Newer &rarr;</a>
-            </li>
+          	<c:choose>
+         	<c:when test="${pageInfo.page<=1 }">
+				<li class="page-item disabled">
+              		<a class="page-link" href="#">&larr;</a>
+            	</li>		
+			</c:when>
+			<c:otherwise>
+				<li class="page-item">
+	              <a href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${pageInfo.page-1}<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">&larr;</a>
+	            </li>
+			</c:otherwise>
+			</c:choose>
+			<c:forEach var="a" begin="${pageInfo.startPage }" end="${pageInfo.endPage }" step="1">
+				<c:choose>
+					<c:when test="${a==pageInfo.page }">
+						<li class="page-item disabled">
+			              <a class="page-link" href="javascript:void(0);">${a }</a>
+			            </li>
+					</c:when>
+				<c:otherwise>
+					<li class="page-item">
+						<a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('list.bo?page=${a }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">${a }</a>
+					</li>
+				</c:otherwise>
+				</c:choose>
+			</c:forEach>
+			<c:choose>
+				<c:when test="${pageInfo.page>=pageInfo.maxPage }">
+					<li class="page-item disabled">
+              			<a class="page-link" href="#">&rarr;</a>
+            		</li>		
+				</c:when>
+				<c:otherwise>
+					<li class="page-item">
+						<a a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('csList.bo?page=${pageInfo.page+1 }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')"><span id="pagebn">></span></a>
+					</li>
+				</c:otherwise>
+			</c:choose>
           </ul>
 
         </div>
 
         <!-- Sidebar Widgets Column -->
-        <div class="col-md-4">
-
-          <!-- Search Widget -->
-          <div class="card my-4">
-            <h5 class="card-header">Search</h5>
-            <div class="card-body">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for...">
-                <span class="input-group-btn">
-                  <button class="btn btn-secondary" type="button">Go!</button>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Categories Widget -->
-          <div class="card my-4">
-            <h5 class="card-header">Categories</h5>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <ul class="list-unstyled mb-0">
-                    <li>
-                      <a href="#">질문하기</a>
-                    </li>
-                    <li>
-                      <a href="#">My정보</a>
-                    </li>
-                    <li>
-                      <a href="#">알람</a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="col-lg-6">
-                  <ul class="list-unstyled mb-0">
-                    <li>
-                      <a href="#">내가쓴글</a>
-                    </li>
-                    <li>
-                      <a href="#">답변한글</a>
-                    </li>
-                    <li>
-                      <a href="#">이용안내</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Side Widget -->
-          <div class="card my-4">
-            <h5 class="card-header">괴발개발</h5>
-            <div class="card-body">
-              괴발개발은 한국의 모든 개발자들이 질문을 올릴 수 있는 통합된 사이트를 지향합니다.
-            </div>
-          </div>
-
-        </div>
+        <%@ include file="/WEB-INF/views/include/sidebar.jsp" %>
 
       </div>
       <!-- /.row -->
@@ -156,16 +109,47 @@
     <!-- /.container -->
 
     <!-- Footer -->
-    <footer class="py-5 bg-dark">
-      <div class="container">
-        <p class="m-0 text-center text-white">괴발개발 &copy; My Website 2018</p>
-      </div>
-      <!-- /.container -->
-    </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="<c:url value="/resources/vendor/jquery/js/jquery.min.js" />"/>
-    <script src="<c:url value="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js" />"/>
-
+    <%@ include file="/WEB-INF/views/include/footer.jsp" %>
+    
+     <!-- Bootstrap core JavaScript -->
+    <script src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+   <%
+   	String messageContent = null;
+   if(session.getAttribute("messageContent") != null){
+	   messageContent = (String) session.getAttribute("messageContent");
+   }
+   String messageType = null;
+   if(session.getAttribute("messageType")!=null){
+	   messageType = (String) session.getAttribute("messageType");
+   }
+   System.out.println(messageType+","+messageContent);
+   if(messageContent != null){
+   %>
+   <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered" role="document">
+	    <div class="modal-content <% if(messageType.equals("오류 메시지")) out.println("panel-warning"); else out.println("panel-success"); %>">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLongTitle"><%=messageType %></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <%=messageContent %>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+   <script>
+  	j$('#messageModal').modal("show");
+   </script>
+   <%
+   	session.removeAttribute("messageContent");
+   	session.removeAttribute("messageType");
+   	} 
+   %>
   </body>
 </html>

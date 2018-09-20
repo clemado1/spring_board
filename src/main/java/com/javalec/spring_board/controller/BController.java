@@ -1,5 +1,6 @@
 package com.javalec.spring_board.controller;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,10 +9,16 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.javalec.spring_board.dao.BDao;
+import com.javalec.spring_board.dto.BDto;
+import com.javalec.spring_board.dto.PageInfo;
+import com.javalec.spring_board.dto.UserDto;
+import com.javalec.spring_board.util.EncryptPasswd;
 
 @Controller
 public class BController {
@@ -42,17 +49,71 @@ public class BController {
 		return "security/loginForm";
 	}
 	
-//	@Autowired
-//	public void setTemplate(JdbcTemplate template) {
-//		this.template = template;
-//		Constant.template = this.template;
-//	}
-//	
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String list(Model model) {
+	@RequestMapping("/joinForm")
+	public String joinForm(Locale locale, Model model) {
+		return "security/join";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/emailck")
+	public String emailck(UserDto udto, Model model) {
 		BDao dao = sqlSession.getMapper(BDao.class);
 		
-		model.addAttribute("list", dao.listDao());
+		int result = dao.testEmail(udto.getEmail());
+		return String.valueOf(result);
+    }
+	
+	@RequestMapping("/nameck")
+	@ResponseBody
+	public String nameck(UserDto udto, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		
+		int result = dao.testName(udto.getName());
+		return String.valueOf(result);
+    }
+	
+	@RequestMapping(value = "/join", method = RequestMethod.POST)
+	public String join(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		String usalt = EncryptPasswd.getSalt();
+		int count = dao.signUp(request.getParameter("email"), request.getParameter("name"), 
+				EncryptPasswd.getPassword(request.getParameter("passwd"), usalt), usalt);
+		System.out.println(count);
+		if(count == 1) {
+			request.getSession().setAttribute("messageType", "성공 메시지");
+			request.getSession().setAttribute("messageContent", "회원가입에 성공했습니다.");
+		}else {
+			request.getSession().setAttribute("messageType", "오류 메시지");
+			request.getSession().setAttribute("messageContent", "회원가입 오류 발생");
+		}
+		
+		return "redirect:list";
+	}
+
+	@RequestMapping("/list")
+	public String list(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+		PageInfo pageInfo = null;
+		ArrayList<BDto> list = null;
+		
+		if(request.getParameter("std")==null) {
+			pageInfo = new PageInfo(page, dao.listCount());
+			list = dao.listDao();
+		}else {
+			if(request.getParameter("std").equals("all")) {
+				pageInfo = new PageInfo(page, dao.SlistCountAll(request.getParameter("keyword")));
+				list = dao.slistDaoAll(request.getParameter("keyword"));
+			}else {
+				pageInfo = new PageInfo(page, dao.SlistCount(request.getParameter("std"), request.getParameter("keyword")));
+				list = dao.slistDao(request.getParameter("std"), request.getParameter("keyword"));
+			}
+			model.addAttribute("std", request.getParameter("std"));
+			model.addAttribute("keyword", request.getParameter("keyword"));
+		}	
+		
+		model.addAttribute("list", list);
+		model.addAttribute("pageInfo", pageInfo);
 		
 		return "/list";
 	}

@@ -16,8 +16,24 @@
 		SELECT COUNT(*) FROM BOARD
 	</select>
 	
+	<select id="slistCountAll" resultType="Integer">
+		SELECT COUNT(*) FROM BOARD WHERE TITLE LIKE '%'+#{param1}+'%' OR CONTENT LIKE '%'+#{param1}+'%'
+	</select>
+	
+	<select id="slistCount" resultType="Integer">
+		SELECT COUNT(*) FROM BOARD WHERE #{param1} LIKE '%'+#{param2}+'%'
+	</select>
+	
 	<select id="listDao" resultType="com.javalec.spring_board.dto.BDto">
 		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC
+	</select>
+	
+	<select id="slistDaoAll" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE TITLE LIKE '%'+#{param1}+'%' OR CONTENT LIKE '%'+#{param1}+'%' ORDER BY BID DESC
+	</select>
+	
+	<select id="slistDao" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE #{param1} LIKE '%'+#{param2}+'%' ORDER BY BID DESC
 	</select>
 	
 	<select id="searchList" resultType="com.javalec.spring_board.dto.BDto">
@@ -66,6 +82,40 @@
 	
 	<delete id="deleteReply">
 		DELETE FROM RBOARD WHERE BGROUP = #{param1}
+	</delete>
+	
+	<!-- user 관련 매핑 -->
+	
+	<select id="testEmail" resultType="Integer">
+		SELECT COUNT(*) FROM USER WHERE EMAIL = #{param1}
+	</select>
+	
+	<select id="testName" resultType="Integer">
+		SELECT COUNT(*) FROM USER WHERE NAME = #{param1}
+	</select>
+	
+	<select id="signIn" resultType="Integer">
+		SELECT COUNT(*) FROM USER WHERE EMAIL = #{param1} AND PASSWD = #{param2}
+	</select>
+	
+	<select id="userList" resultType="com.javalec.spring_board.dto.UserDto">
+		SELECT EMAIL, NAME, UDATE, UID FROM USER WHERE EMAIL = #{param1} AND PASSWD = #{param2}
+	</select>
+	
+	<insert id="signUp">
+		INSERT INTO USER(EMAIL, NAME, PASSWD, UDATE, USALT) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), #{param4})
+	</insert>
+	
+	<update id="modName">
+		UPDATE USER SET NAME = #{param2) WHERE UID = #{param1}
+	</update>
+	
+	<update id="modPass">
+		UPDATE USER SET PASSWD = #{param2) WHERE UID = #{param1}
+	</update>
+	
+	<delete id="deleteUser">
+		DELETE FROM USER WHERE UID = #{param1}
 	</delete>
 	
 </mapper>
