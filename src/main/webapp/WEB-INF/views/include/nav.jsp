@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="s" %>
 
 <html>
 <head>
@@ -19,19 +20,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
+            <li id="nav-home" class="nav-item">
+              <a class="nav-link" href="#">Home</a>
             </li>
-            <li class="nav-item">
+            <li id="nav-about" class="nav-item">
               <a class="nav-link" href="#">About</a>
             </li>
-            <li class="nav-item">
+            <li id="nav-join" class="nav-item">
               <a class="nav-link" href="joinForm">Join</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Login</a>
+            <li id="nav-login" class="nav-item">
+            <s:authorize access = "hasRole('ROLE_USER')">
+			<a class="nav-link" href="#">Logout</a>
+			</s:authorize>
+			
+			<s:authorize access = "!hasRole('ROLE_USER')">
+			<a class="nav-link" href="#">Login</a>
+			</s:authorize>
             </li>
           </ul>
         </div>

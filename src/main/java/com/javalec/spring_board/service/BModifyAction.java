@@ -1,4 +1,4 @@
-package com.javalec.spring_board.action;
+package com.javalec.spring_board.service;
 
 import java.util.Map;
 
@@ -8,22 +8,21 @@ import org.springframework.ui.Model;
 
 import com.javalec.spring_board.dao.BDaoc;
 
-public class BWriteAction implements BAction {
+public class BModifyAction implements BAction {
 
 	@Override
 	public void execute(Model model) {
 		// TODO Auto-generated method stub
-		
 		Map<String, Object> map = model.asMap();
-		HttpServletRequest request = (HttpServletRequest)map.get("request");
+		HttpServletRequest request = (HttpServletRequest) map.get("request");
 		
-		String bName = request.getParameter("bName");
+		String bId = request.getParameter("bId");
 		String bTitle = request.getParameter("bTitle");
 		String bContent = request.getParameter("bContent");
 		
 		BDaoc dao = new BDaoc();
-		dao.write(bName, bTitle, bContent);
-		
+		dao.modify(bId, bTitle, bContent);
+
 	}
 
 }

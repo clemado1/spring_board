@@ -1,4 +1,4 @@
-package com.javalec.spring_board.action;
+package com.javalec.spring_board.service;
 
 import java.util.Map;
 
@@ -9,19 +9,19 @@ import org.springframework.ui.Model;
 import com.javalec.spring_board.dao.BDaoc;
 import com.javalec.spring_board.dto.BDto;
 
-public class BReplyViewAction implements BAction{
+public class BContentAction implements BAction {
 
 	@Override
 	public void execute(Model model) {
 		// TODO Auto-generated method stub
+		
 		Map<String, Object> map = model.asMap();
 		HttpServletRequest request = (HttpServletRequest) map.get("request");
-		String bId = request.getParameter("bId");
-		
+		String bid = request.getParameter("bId");
 		BDaoc dao = new BDaoc();
-		BDto dto = dao.replyView(bId);
+		BDto dto = dao.contentView(bid);
 		
-		model.addAttribute("reply_view", dto);
+		model.addAttribute("content_view", dto);
 	}
 
 }

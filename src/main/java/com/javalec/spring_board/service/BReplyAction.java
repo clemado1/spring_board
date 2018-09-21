@@ -1,4 +1,4 @@
-package com.javalec.spring_board.action;
+package com.javalec.spring_board.service;
 
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 
 import com.javalec.spring_board.dao.BDaoc;
 
-public class BModifyAction implements BAction {
+public class BReplyAction implements BAction {
 
 	@Override
 	public void execute(Model model) {
@@ -18,11 +18,15 @@ public class BModifyAction implements BAction {
 		
 		String bId = request.getParameter("bId");
 		String bTitle = request.getParameter("bTitle");
+		String bName = request.getParameter("bName");
 		String bContent = request.getParameter("bContent");
+		String bGroup = request.getParameter("bGroup");
+		String bStep = request.getParameter("bStep");
+		String bIndent = request.getParameter("bIndent");
 		
 		BDaoc dao = new BDaoc();
-		dao.modify(bId, bTitle, bContent);
-
+		dao.reply(bId, bTitle, bName, bContent, bGroup, bStep, bIndent);
+		
 	}
 
 }

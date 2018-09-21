@@ -32,8 +32,9 @@ public interface BDao {
 	//USER
 	public int testEmail(String email);
 	public int testName(String name);
-	public int signIn();
-	public int signUp(String email, String name, String passwd, String usalt);
+	public UserDto signIn(String email);
+	public int signUp(String email, String name, String passwd);
+	public int signUpRole(String email);
 	public ArrayList<UserDto> listUser();
 	public void modName(String name, int uId);
 	public void modPass(String pass, int uId);

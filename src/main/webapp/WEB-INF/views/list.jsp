@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>개발자 커뮤니티</title>
+    <title>개발자 커뮤니티 괴발개발</title>
 
     <!-- Bootstrap core CSS -->
     <link type="text/css" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -122,7 +122,7 @@
    if(session.getAttribute("messageType")!=null){
 	   messageType = (String) session.getAttribute("messageType");
    }
-   System.out.println(messageType+","+messageContent);
+
    if(messageContent != null){
    %>
    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-hidden="true">

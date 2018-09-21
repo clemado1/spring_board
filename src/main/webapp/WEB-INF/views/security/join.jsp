@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>개발자 커뮤니티</title>
+    <title>개발자 커뮤니티 괴발개발</title>
 
     <link type="text/css" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -23,7 +23,6 @@ var passwdck = 0;
 
 function emailCheck(){
 		var email = $('#email').val();
-		alert(email);
 		$.ajax({
 			url : "emailck",
 			data : {
@@ -33,7 +32,7 @@ function emailCheck(){
 				if ($.trim(data)==0) {
 					$('#emailResult').html("<font color='green'>사용가능한 이메일</font>");
 					$('#name').focus();
-					idck = 1;
+					emailck = 1;
 				} else {
 					$('#emailResult').html("<font color='red'>중복입니다.</font>");
 					$('#email').focus();
@@ -47,7 +46,6 @@ function emailCheck(){
 	}
 function nameCheck(){
 	var name = $('#name').val();
-	alert(email);
 	$.ajax({
 		url : "nameck",
 		data : {
@@ -57,7 +55,7 @@ function nameCheck(){
 			if ($.trim(data)==0) {
 				$('#nameResult').html("<font color='green'>사용가능한 닉네임</font>");
 				$('#passwd').focus();
-				idck = 1;
+				nameck = 1;
 			} else {
 				$('#nameResult').html("<font color='red'>중복입니다.</font>");
 				$('#name').focus();
@@ -77,16 +75,63 @@ function passwdCheck() {
 		$('#passwdResult').html("<font color='red'>비밀번호가 일치하지 않습니다.</font>");
 		passwdck = 0;
 	} else {
-		$('#passwdResult').html("");
+		$('#passwdResult').html("<font color='green'>비밀번호가 일치합니다!</font>");
 		passwdck = 1;
 	}
 }
 function signUp(){
-	if(emailck == 1 && nameck == 1 && passwdck == 1){
-		$("#joinForm").submit();
-	}else{
-		if(emailck == 0)//모달 
-	}
+	
+	var regMail = RegExp(/^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/);
+	var regName= RegExp(/^[a-zA-Z0-9가-힣]{4,8}$/);
+	
+	if($("#email").val().trim() == ""){
+        alert("이메일을 입력해주세요.");
+        $("#email").focus();
+        return false;
+    }
+	
+    if(!regMail.test($("#email").val())){
+        alert("올바른 이메일 형식이 아닙니다.");
+        $("#email").val("");
+        $("#email").focus();
+        return false;
+    }
+     
+    if($("#name").val() == ""){
+         alert("닉네임을 입력해주세요.");
+         $("#name").focus();
+         return false;
+    }
+     
+    if(!regName.test($("#name").val())){
+     	alert("닉네임은 영문, 숫자, 한글로 4~8자리 입력해주세요.");
+        $("#name").val("");
+        $("#name").focus();
+        return false;
+    }
+ 
+    if($("#passwd").val().length>12 || $("#passwd").val().length<8) {
+      	alert("비밀번호는 8~12자로 입력해주세요.");
+      	$("#passwd").focus();
+     	return false;
+    }
+    
+    if(emailck == 0){
+    	alert("이메일 중복 혹은 중복확인 미실시");
+     	return false;
+    }
+    
+    if(nameck == 0){
+    	alert("닉네임 중복 혹은 중복확인 미실시");
+     	return false;
+    }
+    
+    if(passwdck == 0){
+    	alert("비밀번호가 서로 일치하지 않습니다.");
+     	return false;
+    }
+    
+    $("#joinForm")[0].submit();
 }
 </script>
   </head>
@@ -103,7 +148,7 @@ function signUp(){
     	    <h1>회원가입</h1>
         </div>
         <br>
-        <form class="form-horizontal" name="joinForm" method="post" action="join">
+        <form class="form-horizontal" name="joinForm" id="joinForm" method="post" action="join">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <div class="form-group">
           <label class="col-sm-3 control-label" for="email">이메일</label>
@@ -114,26 +159,26 @@ function signUp(){
                 <button class="btn btn-success" onclick="emailCheck();" type="button">중복확인<i class="fa fa-mail-forward spaceLeft"></i></button>
              </span>
           </div>
-          <p class="help-block" id="emailResult">중복확인을 눌러주세요.</p>
+          <p class="help-block" id="emailResult"><font color="red">중복확인을 눌러주세요.</font></p>
         </div>
         </div>
         <div class="form-group">
           <label class="col-sm-3 control-label" for="name">닉네임</label>
         <div class="col-sm-6">
           <div class="input-group">
-             <input class="form-control" id="name" name="name" type="text" placeholder="닉네임">
+             <input class="form-control" id="name" name="name" type="text" placeholder="영문, 숫자, 한글 4~8자리">
              <span class="input-group-btn">
-                <button class="btn btn-success" id="nameck" type="button">중복확인<i class="fa fa-mail-forward spaceLeft"></i></button>
+                <button class="btn btn-success" id="nameck" onclick="nameCheck();" type="button">중복확인<i class="fa fa-mail-forward spaceLeft"></i></button>
              </span>
            </div>
-           <p class="help-block" id="nameResult">중복확인을 눌러주세요.</p>
+           <p class="help-block" id="nameResult"><font color="red">중복확인을 눌러주세요.</font></p>
         </div>
         </div>
         <div class="form-group">
           <label class="col-sm-3 control-label" for="passwd">비밀번호</label>
         <div class="col-sm-6">
           <input class="form-control" onkeyup="passwdCheck();" id="passwd" name="passwd" type="password" placeholder="비밀번호">
-        <p class="help-block">숫자, 특수문자 포함 8자 이상</p>
+        <p class="help-block">8자 이상 12자 이하</p>
         </div>
         </div>
           <div class="form-group">

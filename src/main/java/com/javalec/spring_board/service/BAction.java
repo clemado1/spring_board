@@ -1,4 +1,4 @@
-package com.javalec.spring_board.action;
+package com.javalec.spring_board.service;
 
 import org.springframework.ui.Model;
 

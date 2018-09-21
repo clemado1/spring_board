@@ -8,7 +8,6 @@ public class UserDto {
 	private String passwd;
 	private Timestamp udate;
 	private int uId;
-	private String usalt;
 	
 	public UserDto() {
 		
@@ -51,12 +50,6 @@ public class UserDto {
 	}
 	public void setuId(int uId) {
 		this.uId = uId;
-	}
-	public String getUsalt() {
-		return usalt;
-	}
-	public void setUsalt(String usalt) {
-		this.usalt = usalt;
 	}
 	
 	

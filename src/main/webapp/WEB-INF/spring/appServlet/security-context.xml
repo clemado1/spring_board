@@ -6,16 +6,23 @@
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 	
 	<security:http auto-config="true" use-expressions="true">
-		<security:form-login login-processing-url="/j_spring_security_check" login-page="/loginForm" default-target-url="/login"
-            authentication-failure-url="/loginForm?ng" username-parameter="userid"
-            password-parameter="userpw"
+		<security:form-login login-processing-url="/j_spring_security_check" login-page="/login" default-target-url="/list"
+            authentication-failure-url="/login?ng" username-parameter="email"
+            password-parameter="passwd" always-use-default-target="true"
    		 />
    		<security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login"/>
-		<security:intercept-url pattern="/login" access="hasRole('ROLE_USER')"/>
-		<security:intercept-url pattern="/welcome" access="hasRole('ROLE_ADMIN')"/>
+   		<security:intercept-url pattern="/resources/**" access="permitAll" />
+		<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
+		<security:intercept-url pattern="/write_form" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/write" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/mypage" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/mod_name" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/mod_pswd" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/**" access="permitAll" />
 		 
 	</security:http>
 	
+	<!-- 
 	<security:authentication-manager>
 		<security:authentication-provider>
 			<security:user-service>
@@ -24,5 +31,19 @@
 			</security:user-service>
 		</security:authentication-provider>
 	</security:authentication-manager>
+	-->
+	
+	<security:authentication-manager>
+	  <security:authentication-provider>
+	     <security:password-encoder hash="bcrypt"/>
+	     <security:jdbc-user-service 
+	     data-source-ref="dataSource"
+	     users-by-username-query="SELECT email as username, passwd as password, enabled FROM user WHERE email = ?"
+	     authorities-by-username-query="SELECT email as username, role as authority FROM user_role WHERE email = ?"
+	     />
+	  </security:authentication-provider>
+	</security:authentication-manager>
+   	
+   	
 
 </beans>

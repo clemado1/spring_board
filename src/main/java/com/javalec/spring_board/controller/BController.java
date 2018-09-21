@@ -7,11 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.javalec.spring_board.dao.BDao;
@@ -29,8 +30,14 @@ public class BController {
 	@Autowired
 	private SqlSession sqlSession;
 	
-	@RequestMapping("/login")
-	public String login(Locale locale, Model model) {
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@RequestMapping(value = "/login")
+	public String login(@RequestParam(value = "error", required = false) String error, Model model) {
+		if (error != null) {
+			model.addAttribute("error", "로그인 오류");
+		}
 		return "security/login";
 	}
 	
@@ -75,11 +82,12 @@ public class BController {
 	@RequestMapping(value = "/join", method = RequestMethod.POST)
 	public String join(HttpServletRequest request, Model model) {
 		BDao dao = sqlSession.getMapper(BDao.class);
-		String usalt = EncryptPasswd.getSalt();
+		
 		int count = dao.signUp(request.getParameter("email"), request.getParameter("name"), 
-				EncryptPasswd.getPassword(request.getParameter("passwd"), usalt), usalt);
-		System.out.println(count);
+				passwordEncoder.encode(request.getParameter("passwd")));
+
 		if(count == 1) {
+			dao.signUpRole(request.getParameter("email"));
 			request.getSession().setAttribute("messageType", "성공 메시지");
 			request.getSession().setAttribute("messageContent", "회원가입에 성공했습니다.");
 		}else {
