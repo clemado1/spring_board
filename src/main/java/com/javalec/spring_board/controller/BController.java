@@ -36,7 +36,7 @@ public class BController {
 	@RequestMapping(value = "/login")
 	public String login(@RequestParam(value = "error", required = false) String error, Model model) {
 		if (error != null) {
-			model.addAttribute("error", "로그인 오류");
+			model.addAttribute("error", "로그인 정보를 확인해주세요.");
 		}
 		return "security/login";
 	}
@@ -107,14 +107,14 @@ public class BController {
 		
 		if(request.getParameter("std")==null) {
 			pageInfo = new PageInfo(page, dao.listCount());
-			list = dao.listDao();
+			list = dao.listDao((page-1)*1);
 		}else {
 			if(request.getParameter("std").equals("all")) {
-				pageInfo = new PageInfo(page, dao.SlistCountAll(request.getParameter("keyword")));
-				list = dao.slistDaoAll(request.getParameter("keyword"));
+				pageInfo = new PageInfo(page, dao.slistCountAll(request.getParameter("keyword")));
+				list = dao.slistDaoAll(request.getParameter("keyword"), (page-1)*1);
 			}else {
-				pageInfo = new PageInfo(page, dao.SlistCount(request.getParameter("std"), request.getParameter("keyword")));
-				list = dao.slistDao(request.getParameter("std"), request.getParameter("keyword"));
+				pageInfo = new PageInfo(page, dao.slistCount(request.getParameter("std"), request.getParameter("keyword")));
+				list = dao.slistDao(request.getParameter("std"), request.getParameter("keyword"), (page-1)*1);
 			}
 			model.addAttribute("std", request.getParameter("std"));
 			model.addAttribute("keyword", request.getParameter("keyword"));
@@ -123,13 +123,13 @@ public class BController {
 		model.addAttribute("list", list);
 		model.addAttribute("pageInfo", pageInfo);
 		
-		return "/list";
+		return "board/list";
 	}
 	
-	@RequestMapping("/write_view")
+	@RequestMapping("/write_form")
 	public String write_view(HttpServletRequest request, Model model) {
 		
-		return "write_view";
+		return "board/write_form";
 	}
 	
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
@@ -153,7 +153,7 @@ public class BController {
 		model.addAttribute("board", dao.viewDao(Integer.parseInt(request.getParameter("bId"))));
 		model.addAttribute("rboard", dao.viewReply(Integer.parseInt(request.getParameter("bId"))));
 		
-		return "view";
+		return "board/view";
 	}
 	
 	@RequestMapping("/modify_form")
@@ -163,7 +163,7 @@ public class BController {
 		
 		model.addAttribute("board", dao.viewDao(Integer.parseInt(request.getParameter("bId"))));
 		
-		return "modify_form";
+		return "board/modify_form";
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/modify")
@@ -182,7 +182,7 @@ public class BController {
 		System.out.println("review()");
 		model.addAttribute("bId", request.getParameter("bId"));
 		
-		return "reply_form";
+		return "board/reply_form";
 	}
 	
 	@RequestMapping("/comment_form")
@@ -191,7 +191,7 @@ public class BController {
 		model.addAttribute("bId", request.getParameter("bId"));
 		model.addAttribute("bReply", request.getParameter("bReply"));
 		
-		return "comment";
+		return "board/comment";
 	}
 	
 	@RequestMapping(value = "/reply", method = RequestMethod.POST)

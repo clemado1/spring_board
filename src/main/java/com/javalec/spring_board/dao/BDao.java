@@ -11,11 +11,11 @@ public interface BDao {
 	public int findBId();
 	public int findRId();
 	public int listCount();
-	public int SlistCountAll(String keyword);
-	public int SlistCount(String column, String keyword);
-	public ArrayList<BDto> listDao();
-	public ArrayList<BDto> slistDaoAll(String keyword);
-	public ArrayList<BDto> slistDao(String column, String keyword);
+	public int slistCountAll(String keyword);
+	public int slistCount(String column, String keyword);
+	public ArrayList<BDto> listDao(int page);
+	public ArrayList<BDto> slistDaoAll(String keyword, int page);
+	public ArrayList<BDto> slistDao(String column, String keyword, int page);
 	public ArrayList<BDto> searchList();
 	public BDto viewDao(int bId);
 	public ArrayList<BDto> viewReply(int bGroup);

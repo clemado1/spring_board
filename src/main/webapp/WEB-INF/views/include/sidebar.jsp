@@ -10,18 +10,22 @@
 	<div class="col-md-4">
 
 		<!-- Search Widget -->
+		<form action="list" name="search_bar" id="search_bar" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 		<div class="card my-4">
 			<h5 class="card-header">Search</h5>
 			<div class="card-body">
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Search for...">
+					<input type="hidden" name="std" value="all">
+					<input type="text" name="keyword" id="keyword" class="form-control" placeholder="Search for...">
 					<span class="input-group-btn">
-						<button class="btn btn-secondary" type="button">Go!</button>
+						<button class="btn btn-secondary" type="submit">검색</button>
 					</span>
+					
 				</div>
 			</div>
 		</div>
-
+	</form>
 		<!-- Categories Widget -->
 		<div class="card my-4">
 			<h5 class="card-header">Categories</h5>
@@ -29,7 +33,7 @@
 				<div class="row">
 					<div class="col-lg-6">
 						<ul class="list-unstyled mb-0">
-							<li><a href="write">질문하기</a></li>
+							<li><a href="write_form">질문하기</a></li>
 							<li><a href="#">My정보</a></li>
 							<li><a href="#">알람</a></li>
 						</ul>

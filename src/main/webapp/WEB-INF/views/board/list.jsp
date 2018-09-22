@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <html>
 <head>
@@ -21,14 +22,8 @@
   </head>
 
   <body>
-<script type="text/javascript">
-    jQuery.noConflict();
-    var j$ = jQuery;
-</script>
-  
   
   <%@ include file="/WEB-INF/views/include/nav.jsp" %>
-
     <!-- Page Content -->
     <div class="container">
 
@@ -36,10 +31,11 @@
 
         <!-- Blog Entries Column -->
         <div class="col-md-8">
-			<!-- 검색 키워드 노출 -->
-          <h1 class="my-4">최근 질문
-            <!--<small>Secondary Text</small> -->
-          </h1>
+			 <h2 class="my-4"><c:choose>
+			<c:when test="${keyword != null }">검색 결과</c:when>
+			<c:otherwise>
+         최근 질문
+          </c:otherwise></c:choose></h2>
 
           <!-- Blog Post -->
           <c:forEach items="${list}" var="dto">
@@ -50,8 +46,8 @@
               <a href="#" class="btn btn-primary">Read More &rarr;</a>
             </div>
             <div class="card-footer text-muted">
-              Posted on ${dto.date } by ${dto.name }
-              <a href="#">Start Bootstrap</a>
+              Posted on <fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${dto.date }" /> by ${dto.name }
+              <font color="black">답변</font> ${dto.bReply } <font color="black">추천</font> ${dto.hit }
             </div>
           </div>
           </c:forEach>
@@ -60,12 +56,12 @@
           	<c:choose>
          	<c:when test="${pageInfo.page<=1 }">
 				<li class="page-item disabled">
-              		<a class="page-link" href="#">&larr;</a>
+              		<a class="page-link" href="#">&laquo;</a>
             	</li>		
 			</c:when>
 			<c:otherwise>
 				<li class="page-item">
-	              <a href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${pageInfo.page-1}<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">&larr;</a>
+	              <a href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${pageInfo.page-1}<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">&laquo;</a>
 	            </li>
 			</c:otherwise>
 			</c:choose>
@@ -78,7 +74,7 @@
 					</c:when>
 				<c:otherwise>
 					<li class="page-item">
-						<a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('list.bo?page=${a }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">${a }</a>
+						<a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${a }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">${a }</a>
 					</li>
 				</c:otherwise>
 				</c:choose>
@@ -86,12 +82,12 @@
 			<c:choose>
 				<c:when test="${pageInfo.page>=pageInfo.maxPage }">
 					<li class="page-item disabled">
-              			<a class="page-link" href="#">&rarr;</a>
+              			<a class="page-link" href="#">&raquo;</a>
             		</li>		
 				</c:when>
 				<c:otherwise>
 					<li class="page-item">
-						<a a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('csList.bo?page=${pageInfo.page+1 }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')"><span id="pagebn">></span></a>
+						<a a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('List?page=${pageInfo.page+1 }<c:out value="${std !=null ? '&std=' : '' }"/>${std}<c:out value="${keyword !=null ? '&keyword=' : '' }"/>${keyword}')">&raquo;</a>
 					</li>
 				</c:otherwise>
 			</c:choose>
@@ -144,7 +140,7 @@
 	  </div>
 	</div>
    <script>
-  	j$('#messageModal').modal("show");
+  	$('#messageModal').modal("show");
    </script>
    <%
    	session.removeAttribute("messageContent");

@@ -1,20 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
 
-    <title>개발자 커뮤니티 괴발개발</title>
+<title>개발자 커뮤니티 괴발개발</title>
 
-    <link type="text/css" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link type="text/css"
+	href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
 
-    <link type="text/css" href="${pageContext.request.contextPath}/resources/css/blog-home.css" rel="stylesheet">
-	 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<link type="text/css"
+	href="${pageContext.request.contextPath}/resources/css/blog-home.css"
+	rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javascript">
 
 var emailck = 0;
@@ -86,12 +91,16 @@ function signUp(){
 	
 	if($("#email").val().trim() == ""){
         alert("이메일을 입력해주세요.");
+        emailck = 0;
+        $('#emailResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
         $("#email").focus();
         return false;
     }
 	
     if(!regMail.test($("#email").val())){
         alert("올바른 이메일 형식이 아닙니다.");
+        emailck = 0;
+        $('#emailResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
         $("#email").val("");
         $("#email").focus();
         return false;
@@ -99,12 +108,16 @@ function signUp(){
      
     if($("#name").val() == ""){
          alert("닉네임을 입력해주세요.");
+         nameck = 0;
+         $('#nameResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
          $("#name").focus();
          return false;
     }
      
     if(!regName.test($("#name").val())){
      	alert("닉네임은 영문, 숫자, 한글로 4~8자리 입력해주세요.");
+     	nameck = 0;
+     	$('#nameResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
         $("#name").val("");
         $("#name").focus();
         return false;
@@ -134,76 +147,100 @@ function signUp(){
     $("#joinForm")[0].submit();
 }
 </script>
-  </head>
+</head>
 
-  <body>
-  
-  <%@ include file="/WEB-INF/views/include/nav.jsp" %>
+<body>
 
-    <!-- Page Content -->
-    <br><br><br>
-    <article class="container">
-        <div class="col-md-12">
-        <div class="page-header">
-    	    <h1>회원가입</h1>
-        </div>
-        <br>
-        <form class="form-horizontal" name="joinForm" id="joinForm" method="post" action="join">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="email">이메일</label>
-        <div class="col-sm-6">
-         <div class="input-group">
-             <input class="form-control" id="email" name="email" type="email" placeholder="이메일">
-             <span class="input-group-btn">
-                <button class="btn btn-success" onclick="emailCheck();" type="button">중복확인<i class="fa fa-mail-forward spaceLeft"></i></button>
-             </span>
-          </div>
-          <p class="help-block" id="emailResult"><font color="red">중복확인을 눌러주세요.</font></p>
-        </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="name">닉네임</label>
-        <div class="col-sm-6">
-          <div class="input-group">
-             <input class="form-control" id="name" name="name" type="text" placeholder="영문, 숫자, 한글 4~8자리">
-             <span class="input-group-btn">
-                <button class="btn btn-success" id="nameck" onclick="nameCheck();" type="button">중복확인<i class="fa fa-mail-forward spaceLeft"></i></button>
-             </span>
-           </div>
-           <p class="help-block" id="nameResult"><font color="red">중복확인을 눌러주세요.</font></p>
-        </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="passwd">비밀번호</label>
-        <div class="col-sm-6">
-          <input class="form-control" onkeyup="passwdCheck();" id="passwd" name="passwd" type="password" placeholder="비밀번호">
-        <p class="help-block">8자 이상 12자 이하</p>
-        </div>
-        </div>
-          <div class="form-group">
-              <label class="col-sm-3 control-label" for="passwd2">비밀번호 확인</label>
-             <div class="col-sm-6">
-              <input class="form-control" onkeyup="passwdCheck();" id="passwd2" type="password" placeholder="비밀번호 확인">
-                <p class="help-block" id="passwdResult">비밀번호를 한번 더 입력해주세요.</p>
-             </div>
-          </div>
-        <br><br>
-        <div class="form-group">
-          <div class="col-sm-12 text-center">
-            <button class="btn btn-primary" type="button" onclick="signUp()">회원가입<i class="fa fa-check spaceLeft"></i></button>
-            <button class="btn btn-danger" type="button" onclick="location.href='list'">가입취소<i class="fa fa-times spaceLeft"></i></button>
-          </div>
-        </div>
-        </form>
-          <hr>
-        </div>
-      </article>
+	<%@ include file="/WEB-INF/views/include/nav.jsp"%>
+
+	<!-- Page Content -->
+	<br>
+	<br>
+	<br>
+	<article class="container">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>회원가입</h1>
+			</div>
+			<br>
+			<form class="form-horizontal" name="joinForm" id="joinForm"
+				method="post" action="join">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="email">이메일</label>
+					<div class="col-sm-6">
+						<div class="input-group">
+							<input class="form-control" id="email" name="email" type="email"
+								placeholder="이메일"> <span class="input-group-btn">
+								<button class="btn btn-success" onclick="emailCheck();"
+									type="button">
+									중복확인<i class="fa fa-mail-forward spaceLeft"></i>
+								</button>
+							</span>
+						</div>
+						<p class="help-block" id="emailResult">
+							<font color="red">중복확인을 눌러주세요.</font>
+						</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="name">닉네임</label>
+					<div class="col-sm-6">
+						<div class="input-group">
+							<input class="form-control" id="name" name="name" type="text"
+								placeholder="영문, 숫자, 한글 4~8자리"> <span
+								class="input-group-btn">
+								<button class="btn btn-success" id="nameck"
+									onclick="nameCheck();" type="button">
+									중복확인<i class="fa fa-mail-forward spaceLeft"></i>
+								</button>
+							</span>
+						</div>
+						<p class="help-block" id="nameResult">
+							<font color="red">중복확인을 눌러주세요.</font>
+						</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="passwd">비밀번호</label>
+					<div class="col-sm-6">
+						<input class="form-control" onkeyup="passwdCheck();" id="passwd"
+							name="passwd" type="password" placeholder="비밀번호">
+						<p class="help-block">8자 이상 12자 이하</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="passwd2">비밀번호 확인</label>
+					<div class="col-sm-6">
+						<input class="form-control" onkeyup="passwdCheck();" id="passwd2"
+							type="password" placeholder="비밀번호 확인">
+						<p class="help-block" id="passwdResult">비밀번호를 한번 더 입력해주세요.</p>
+					</div>
+				</div>
+				<br>
+				<br>
+				<div class="form-group">
+					<div class="col-sm-12 text-center">
+						<button class="btn btn-primary" type="button" onclick="signUp()">
+							회원가입<i class="fa fa-check spaceLeft"></i>
+						</button>
+						<button class="btn btn-danger" type="button"
+							onclick="location.href='list'">
+							가입취소<i class="fa fa-times spaceLeft"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			<hr>
+		</div>
+	</article>
 
 
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-   
-  </body>
+	<!-- Bootstrap core JavaScript -->
+	<script
+		src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>

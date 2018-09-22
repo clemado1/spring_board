@@ -2,7 +2,7 @@ package com.javalec.spring_board.dto;
 
 public class PageInfo {
 	private int page;
-	private int limit = 10;
+	private int limit = 5;
 	private int limitPage = 5;
 	private int maxPage;
 	private int startPage;

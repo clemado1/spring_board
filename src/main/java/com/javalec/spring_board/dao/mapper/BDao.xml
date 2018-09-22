@@ -17,23 +17,23 @@
 	</select>
 	
 	<select id="slistCountAll" resultType="Integer">
-		SELECT COUNT(*) FROM BOARD WHERE TITLE LIKE '%'+#{param1}+'%' OR CONTENT LIKE '%'+#{param1}+'%'
+		SELECT COUNT(*) FROM BOARD WHERE TITLE LIKE CONCAT('%',#{param1},'%') OR CONTENT LIKE CONCAT('%',#{param1},'%')
 	</select>
 	
 	<select id="slistCount" resultType="Integer">
-		SELECT COUNT(*) FROM BOARD WHERE #{param1} LIKE '%'+#{param2}+'%'
+		SELECT COUNT(*) FROM BOARD WHERE #{param1} LIKE CONCAT('%',#{param2},'%')
 	</select>
 	
 	<select id="listDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC LIMIT #{param1},5
 	</select>
 	
 	<select id="slistDaoAll" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE TITLE LIKE '%'+#{param1}+'%' OR CONTENT LIKE '%'+#{param1}+'%' ORDER BY BID DESC
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE TITLE LIKE CONCAT('%',#{param1},'%') OR CONTENT LIKE CONCAT('%',#{param1},'%') ORDER BY BID DESC LIMIT #{param2},5
 	</select>
 	
 	<select id="slistDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE #{param1} LIKE '%'+#{param2}+'%' ORDER BY BID DESC
+		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE #{param1} LIKE CONCAT('%',#{param2},'%') ORDER BY BID DESC LIMIT #{param3},5
 	</select>
 	
 	<select id="searchList" resultType="com.javalec.spring_board.dto.BDto">
