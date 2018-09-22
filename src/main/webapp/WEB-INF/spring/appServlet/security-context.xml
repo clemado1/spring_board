@@ -7,9 +7,7 @@
 	
 	<security:http auto-config="true" use-expressions="true">
 		<security:form-login login-processing-url="/j_spring_security_check" login-page="/login" default-target-url="/list"
-            authentication-failure-url="/login?ng" username-parameter="email"
-            password-parameter="passwd" always-use-default-target="true"
-   		 />
+            authentication-failure-url="/login?error" username-parameter="username" password-parameter="password"/>
    		<security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login"/>
    		<security:intercept-url pattern="/resources/**" access="permitAll" />
 		<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
@@ -35,15 +33,16 @@
 	
 	<security:authentication-manager>
 	  <security:authentication-provider>
-	     <security:password-encoder hash="bcrypt"/>
+	     <security:password-encoder ref="passwordEncoder"/>
 	     <security:jdbc-user-service 
 	     data-source-ref="dataSource"
-	     users-by-username-query="SELECT email as username, passwd as password, enabled FROM user WHERE email = ?"
+	     users-by-username-query="SELECT email as username, passwd as password, CASE enabled WHEN 1 THEN 'true' ELSE 'false' END enabled FROM user WHERE email = ?"
 	     authorities-by-username-query="SELECT email as username, role as authority FROM user_role WHERE email = ?"
 	     />
 	  </security:authentication-provider>
 	</security:authentication-manager>
-   	
-   	
+   
+   	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+   	</bean>
 
 </beans>

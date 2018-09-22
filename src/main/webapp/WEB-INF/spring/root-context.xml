@@ -20,6 +20,5 @@
 		<constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
 	</bean>
 	
-	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
-   	</bean>
+	
 </beans>
