@@ -31,20 +31,17 @@
 
         <!-- Blog Entries Column -->
         <div class="col-md-8">
-			 <h5 class="my-4">'${keyword }' 검색 결과 ${pageInfo.listCount }건</h5>
-				<div style="width:100%;text-align:right;padding:10px;">
+			 <h5 class="my-4">#${tag } 검색 결과 ${pageInfo.listCount }건</h5>
+			 <div style="width:100%;text-align:right;padding:10px;">
 				<div class="btn-group btn-group-toggle" data-toggle="buttons">
-				  <label class="btn btn-outline-primary <c:out value="${std eq 'bid' ? 'active' : '' }"/>" onclick="location.href='list?std=bid&keyword=${keyword}'">
+				  <label class="btn btn-outline-primary <c:out value="${std eq 'bid' ? 'active' : '' }"/>" onclick="location.href='tag?std=bid&q=${tag}'">
 				    <input type="radio" autocomplete="off" <c:out value="${std eq 'bid' ? 'checked' : '' }"/>> New
 				  </label>
-				  <label class="btn btn-outline-primary <c:out value="${std eq 'rel' ? 'active' : '' }"/>" onclick="location.href='list?std=rel&keyword=${keyword}'">
-				    <input type="radio" autocomplete="off" <c:out value="${std eq 'rel' ? 'checked' : '' }"/>> Relevance
-				  </label>
-				  <label class="btn btn-outline-primary <c:out value="${std eq 'hit' ? 'active' : '' }"/>" onclick="location.href='list?std=hit&keyword=${keyword}'">
+				  <label class="btn btn-outline-primary <c:out value="${std eq 'hit' ? 'active' : '' }"/>" onclick="location.href='tag?std=hit&q=${tag}'">
 				    <input type="radio" autocomplete="off" <c:out value="${std eq 'hit' ? 'checked' : '' }"/>> Hit
 				  </label>
 				</div>
-				</div>
+			</div>
 
           <!-- Blog Post -->
           <c:forEach items="${list}" var="dto">
@@ -71,7 +68,7 @@
 			</c:when>
 			<c:otherwise>
 				<li class="page-item">
-	              <a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${pageInfo.page-1}&std=${std}&keyword=${keyword}')">&larr;</a>
+	              <a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('tag?page=${pageInfo.page-1}&std=${std}&q=${tag}')">&larr;</a>
 	            </li>
 			</c:otherwise>
 			</c:choose>
@@ -84,7 +81,7 @@
 					</c:when>
 				<c:otherwise>
 					<li class="page-item">
-						<a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('list?page=${a }&std=${std}&keyword=${keyword}')">${a }</a>
+						<a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('tag?page=${a }&std=${std}&q=${tag}')">${a }</a>
 					</li>
 				</c:otherwise>
 				</c:choose>
@@ -97,7 +94,7 @@
 				</c:when>
 				<c:otherwise>
 					<li class="page-item">
-						<a a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('List?page=${pageInfo.page+1 }&std=${std}&keyword=${keyword}')">&rarr;</a>
+						<a a class="page-link" href="javascript:void(0);" onclick="location.href=encodeURI('tag?page=${pageInfo.page+1 }&std=${std}&q=${tag}')">&rarr;</a>
 					</li>
 				</c:otherwise>
 			</c:choose>

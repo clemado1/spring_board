@@ -1,6 +1,7 @@
 package com.javalec.spring_board.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.javalec.spring_board.dto.BDto;
 import com.javalec.spring_board.dto.UserDto;
@@ -9,25 +10,34 @@ public interface BDao {
 	
 	//board
 	public int findBId();
-	public int findRId();
+	public int findRId(int bGroup);
 	public int listCount();
-	public int slistCountAll(String keyword);
-	public int slistCount(String column, String keyword);
-	public ArrayList<BDto> listDao(int page);
-	public ArrayList<BDto> slistDaoAll(String keyword, int page);
-	public ArrayList<BDto> slistDao(String column, String keyword, int page);
-	public ArrayList<BDto> searchList();
+	public int monCount();
+	public int slistCount(String keyword);
+	public int tagCount(String tag);
+	public ArrayList<String> tagNames();
+	public ArrayList<BDto> listDao(int startRow);
+	public ArrayList<BDto> hotList(int startRow);
+	public ArrayList<BDto> monList(int startRow);
+	public ArrayList<BDto> slistDao(String keyword, String std, int startRow);
+	public ArrayList<BDto> slistRel(String keyword, int startRow);
+	public ArrayList<BDto> tagList(String tag, String std, int startRow);
+	public ArrayList<BDto> randList();
 	public BDto viewDao(int bId);
 	public ArrayList<BDto> viewReply(int bGroup);
-	public void writeDao(int bId, String bName, String bTitle, String bContent);
-	public void replyDao(int bId, String bName, String bContent, int bGroup);
-	public void commentDao(int bId, String bName, String bContent, int bGroup, int bReply);
+	public void writeDao(int bId, String email, String title, String content);
+	public void writeTag(HashMap<String, Object> tag_map);
+	public void replyDao(int bId, String email, String content, int bGroup);
+	public void commentDao(int bId, String email, String content, int bGroup, int bReply);
 	public void upHit(int bId);
+	public void upReadcount(int bId);
 	public void upReply(int bId);
 	public void upRHit(int bId);
-	public void modifyDao(int bId, String bTitle, String bContent);
+	public void modifyDao(int bId, String title, String content);
 	public void deleteDao(int bId);
-	public void deleteReply(int bGroup);
+	public void deleteReplyAll(int bGroup);
+	public void deleteReply(int bGroup, int bId);
+	public void deleteTag(int bId);
 	
 	//USER
 	public int testEmail(String email);

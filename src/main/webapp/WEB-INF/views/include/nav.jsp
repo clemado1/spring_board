@@ -23,17 +23,17 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="list">괴발개발</a>
+        <a class="navbar-brand" href="./">괴발개발</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li id="nav-home" class="nav-item">
-              <a class="nav-link" href="/">Home</a>
+              <a class="nav-link" href="./">Home</a>
             </li>
             <li id="nav-about" class="nav-item">
-              <a class="nav-link" href="#">About</a>
+              <a class="nav-link" href="about">About</a>
             </li>
             <li id="nav-join" class="nav-item">
             <s:authorize access = "hasRole('ROLE_USER')">

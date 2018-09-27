@@ -1,12 +1,15 @@
 package com.javalec.spring_board.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.javalec.spring_board.dao.BDao;
 import com.javalec.spring_board.dto.BDto;
 import com.javalec.spring_board.dto.PageInfo;
+import com.javalec.spring_board.dto.TagDto;
 import com.javalec.spring_board.dto.UserDto;
-import com.javalec.spring_board.util.EncryptPasswd;
 
 @Controller
 public class BController {
@@ -33,6 +36,38 @@ public class BController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String home(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+		String std = request.getParameter("std") == null ? "new" : request.getParameter("std");
+		PageInfo pageInfo = null;
+		ArrayList<BDto> list = null;
+		
+		if(std.equals("new")) {
+			pageInfo = new PageInfo(page, dao.listCount(), 20);
+			list = dao.listDao(pageInfo.getStartRow());
+		}else if(std.equals("hot")) {
+			pageInfo = new PageInfo(page, dao.listCount(), 20);
+			list = dao.hotList(pageInfo.getStartRow());
+		}else if(std.equals("mon")) {
+			pageInfo = new PageInfo(page, dao.monCount(), 20);
+			list = dao.monList(pageInfo.getStartRow());
+		}
+		
+		model.addAttribute("tags", dao.tagNames());
+		model.addAttribute("std", std);
+		model.addAttribute("list", list);
+		model.addAttribute("pageInfo", pageInfo);
+		
+		return "home";
+	}
+	
+	@RequestMapping("/about")
+	public String about(Locale locale, Model model) {
+		return "board/about";
+	}
+	
 	@RequestMapping(value = "/login")
 	public String login(@RequestParam(value = "error", required = false) String error, Model model) {
 		if (error != null) {
@@ -44,16 +79,6 @@ public class BController {
 	@RequestMapping("/logout")
 	public String logout(Locale locale, Model model) {
 		return "security/logout";
-	}
-	
-	@RequestMapping("/welcome")
-	public String welcome(Locale locale, Model model) {
-		return "security/welcome";
-	}
-	
-	@RequestMapping("/loginForm")
-	public String loginForm(Locale locale, Model model) {
-		return "security/loginForm";
 	}
 	
 	@RequestMapping("/joinForm")
@@ -95,31 +120,45 @@ public class BController {
 			request.getSession().setAttribute("messageContent", "회원가입 오류 발생");
 		}
 		
-		return "redirect:list";
+		return "redirect:/";
 	}
 
+	@RequestMapping(value = "/tag", method = RequestMethod.GET)
+	public String tag(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		String std = request.getParameter("std") == null ? "bid" : request.getParameter("std");
+		String tag = request.getParameter("q");
+		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+		PageInfo pageInfo = new PageInfo(page, dao.tagCount(tag), 10);
+		ArrayList<BDto> list = dao.tagList(tag, std.toUpperCase(), pageInfo.getStartRow());
+		
+		model.addAttribute("tags", dao.tagNames());
+		model.addAttribute("std", std);
+		model.addAttribute("tag", tag);
+		model.addAttribute("list", list);
+		model.addAttribute("pageInfo", pageInfo);
+		
+		return "board/tag";
+	}
+	
 	@RequestMapping("/list")
 	public String list(HttpServletRequest request, Model model) {
 		BDao dao = sqlSession.getMapper(BDao.class);
+		String keyword = request.getParameter("keyword");
+		String std = request.getParameter("std") == null ? "bid" : request.getParameter("std");
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-		PageInfo pageInfo = null;
+		PageInfo pageInfo = new PageInfo(page, dao.slistCount(keyword), 10);
 		ArrayList<BDto> list = null;
 		
-		if(request.getParameter("std")==null) {
-			pageInfo = new PageInfo(page, dao.listCount());
-			list = dao.listDao((page-1)*1);
+		if(!std.equals("rel")) {
+			list = dao.slistDao(keyword, std.toUpperCase(), pageInfo.getStartRow());
 		}else {
-			if(request.getParameter("std").equals("all")) {
-				pageInfo = new PageInfo(page, dao.slistCountAll(request.getParameter("keyword")));
-				list = dao.slistDaoAll(request.getParameter("keyword"), (page-1)*1);
-			}else {
-				pageInfo = new PageInfo(page, dao.slistCount(request.getParameter("std"), request.getParameter("keyword")));
-				list = dao.slistDao(request.getParameter("std"), request.getParameter("keyword"), (page-1)*1);
-			}
-			model.addAttribute("std", request.getParameter("std"));
-			model.addAttribute("keyword", request.getParameter("keyword"));
-		}	
+			list = dao.slistRel(keyword, pageInfo.getStartRow());
+		}
 		
+		model.addAttribute("tags", dao.tagNames());
+		model.addAttribute("std", std);
+		model.addAttribute("keyword", keyword);
 		model.addAttribute("list", list);
 		model.addAttribute("pageInfo", pageInfo);
 		
@@ -129,113 +168,147 @@ public class BController {
 	@RequestMapping("/write_form")
 	public String write_view(HttpServletRequest request, Model model) {
 		
-		return "board/write_form";
+		return "board/write";
 	}
 	
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
 	public String write(HttpServletRequest request, Model model) {
-		System.out.println("write()");
+
 		BDao dao = sqlSession.getMapper(BDao.class);
-		int bId = dao.findBId();
-		dao.writeDao(bId+1, request.getParameter("bName"), 
-				request.getParameter("bTitle"), 
-				request.getParameter("bContent"));
+		int bId = dao.findBId()+1;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		dao.writeDao(bId, auth.getName(), 
+				request.getParameter("title"), 
+				request.getParameter("content").replaceAll("\r\n", "<br>"));
 		
-		return "redirect:list";
+		if(request.getParameter("tags")!=null&&!request.getParameter("tags").equals("")) {
+			String[] tag_arry = request.getParameter("tags").split(",");
+			ArrayList<TagDto> tag_list = new ArrayList<TagDto>();
+			int cnt = 0;
+			for(int i = 0; i < tag_arry.length; i++) {
+				if(cnt>=5) break;
+				cnt++;
+				if(!tag_arry[i].trim().equals("")) tag_list.add(new TagDto(i+1, bId, tag_arry[i].trim().replaceAll(" ", "_")));
+			}
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("bid", bId);
+			map.put("tag_list", tag_list);
+			dao.writeTag(map);
+		}
+		
+		return "redirect:/";
 	}
 	
 	@RequestMapping("/view")
 	public String content_view(HttpServletRequest request, Model model) {
-		System.out.println("view()");
 		BDao dao = sqlSession.getMapper(BDao.class);
 		
-		//dao.upHit(Integer.parseInt(request.getParameter("bId")));
-		model.addAttribute("board", dao.viewDao(Integer.parseInt(request.getParameter("bId"))));
-		model.addAttribute("rboard", dao.viewReply(Integer.parseInt(request.getParameter("bId"))));
-		
+		dao.upReadcount(Integer.parseInt(request.getParameter("id")));
+		model.addAttribute("board", dao.viewDao(Integer.parseInt(request.getParameter("id"))));
+		model.addAttribute("rboard", dao.viewReply(Integer.parseInt(request.getParameter("id"))));
+		model.addAttribute("tags", dao.tagNames());
+		model.addAttribute("randList", dao.randList());
 		return "board/view";
+	}
+	
+	@RequestMapping("/hit")
+	public String upHit(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		dao.upHit(Integer.parseInt(request.getParameter("id")));
+		
+		return "redirect:view?id="+Integer.parseInt(request.getParameter("id"));
 	}
 	
 	@RequestMapping("/modify_form")
 	public String modify_form(HttpServletRequest request, Model model) {
-		System.out.println("modify_form");
 		BDao dao = sqlSession.getMapper(BDao.class);
+		BDto dto = dao.viewDao(Integer.parseInt(request.getParameter("id")));
+		dto.setContent(dto.getContent().replace("<br>", "\r\n"));
+		String tag = "";
+		for(String i :dto.getTags()) tag+=i+",";
 		
-		model.addAttribute("board", dao.viewDao(Integer.parseInt(request.getParameter("bId"))));
+		model.addAttribute("tag",tag);
+		model.addAttribute("board", dto);
 		
-		return "board/modify_form";
+		return "board/modify";
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/modify")
 	public String modify(HttpServletRequest request, Model model) {
-		System.out.println("modify()");
 		BDao dao = sqlSession.getMapper(BDao.class);
-		dao.modifyDao(Integer.parseInt(request.getParameter("bId")), 
-				request.getParameter("bTitle"), 
-				request.getParameter("bContent"));
+		int bId = Integer.parseInt(request.getParameter("bId"));
+		dao.modifyDao(bId, request.getParameter("title"), 
+				request.getParameter("content").replaceAll("\r\n", "<br>"));
+		dao.deleteTag(bId);
+		if(request.getParameter("tags")!=null) {
+			String[] tag_arry = request.getParameter("tags").split(",");
+			ArrayList<TagDto> tag_list = new ArrayList<TagDto>();
+			int cnt = 0;
+			for(int i = 0; i < tag_arry.length; i++) {
+				if(cnt>=5) break;
+				cnt++;
+				if(!tag_arry[i].trim().equals("")) tag_list.add(new TagDto(i+1, bId, tag_arry[i].trim().replaceAll(" ", "_")));
+			}
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("bid", bId);
+			map.put("tag_list", tag_list);
+			dao.writeTag(map);
+		}
 		
-		return "redirect:view?bId="+Integer.parseInt(request.getParameter("bId"));
-	}
-	
-	@RequestMapping("/reply_form")
-	public String reply_view(HttpServletRequest request, Model model) {
-		System.out.println("review()");
-		model.addAttribute("bId", request.getParameter("bId"));
-		
-		return "board/reply_form";
-	}
-	
-	@RequestMapping("/comment_form")
-	public String comment_form(HttpServletRequest request, Model model) {
-		
-		model.addAttribute("bId", request.getParameter("bId"));
-		model.addAttribute("bReply", request.getParameter("bReply"));
-		
-		return "board/comment";
+		return "redirect:view?id="+bId;
 	}
 	
 	@RequestMapping(value = "/reply", method = RequestMethod.POST)
 	public String reply(HttpServletRequest request, Model model) {
-		System.out.println("reply()");
 		BDao dao = sqlSession.getMapper(BDao.class);
-		int bId = dao.findRId();
-		dao.replyDao(bId+1, request.getParameter("bName"), 
-				request.getParameter("bContent"),
-				Integer.parseInt(request.getParameter("bId")));
+		int bGroup = Integer.parseInt(request.getParameter("bId"));
+		int bId = dao.findRId(bGroup);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		dao.replyDao(bId+1, auth.getName(), 
+				request.getParameter("content").replaceAll("\r\n", "<br>"),bGroup);
 		dao.upReply(Integer.parseInt(request.getParameter("bId")));
 		
-		return "redirect:view?bId="+Integer.parseInt(request.getParameter("bId"));
+		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
 	}
 	
-	@RequestMapping("/upHit")
-	public String upHit(HttpServletRequest request, Model model) {
-		System.out.println("upHit()");
+	@RequestMapping("/rehit")
+	public String upRHit(HttpServletRequest request, Model model) {
 		BDao dao = sqlSession.getMapper(BDao.class);
 		dao.upRHit(Integer.parseInt(request.getParameter("rId")));
 		
-		return "redirect:view?bId="+Integer.parseInt(request.getParameter("bId"));
+		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
 	}
 	
 	@RequestMapping(value = "/comment", method = RequestMethod.POST)
 	public String comment(HttpServletRequest request, Model model) {
-		System.out.println("comment()");
 		BDao dao = sqlSession.getMapper(BDao.class);
-		int bId = dao.findRId();
-		dao.commentDao(bId+1, request.getParameter("bName"), 
-				request.getParameter("bContent"),
-				Integer.parseInt(request.getParameter("bId")), 
-				Integer.parseInt(request.getParameter("bReply")));
+		int bGroup = Integer.parseInt(request.getParameter("bId"));
+		int bId = dao.findRId(bGroup);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		dao.commentDao(bId+1, auth.getName(), 
+				request.getParameter("content"), bGroup, 
+				Integer.parseInt(request.getParameter("rId")));
 		
-		return "redirect:view?bId="+Integer.parseInt(request.getParameter("bId"));
+		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
 	}
 	
 	@RequestMapping("/delete")
 	public String delete(HttpServletRequest request, Model model) {
-		System.out.println("delete()");
 		BDao dao = sqlSession.getMapper(BDao.class);
-		dao.deleteDao(Integer.parseInt(request.getParameter("bId")));
-		dao.deleteReply(Integer.parseInt(request.getParameter("bId")));
+		int bId = Integer.parseInt(request.getParameter("id"));
+		dao.deleteTag(bId);
+		dao.deleteDao(bId);
+		dao.deleteReplyAll(bId);
 		
-		return "redirect:list";
+		return "redirect:/";
 	}
+	
+	@RequestMapping("/re_del")
+	public String re_del(HttpServletRequest request, Model model) {
+		BDao dao = sqlSession.getMapper(BDao.class);
+		dao.deleteReply(Integer.parseInt(request.getParameter("bId")), Integer.parseInt(request.getParameter("rId")));
+		
+		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
+	}
+
 }

@@ -2,7 +2,8 @@ package com.javalec.spring_board.dto;
 
 public class PageInfo {
 	private int page;
-	private int limit = 5;
+	private int startRow;
+	private int limit;
 	private int limitPage = 5;
 	private int maxPage;
 	private int startPage;
@@ -13,12 +14,13 @@ public class PageInfo {
 		
 	}
 	
-	public PageInfo(int page, int listCount) {
+	public PageInfo(int page, int listCount, int limit) {
 		int maxPage = (int)((double)listCount/limit+0.95);
 		int startPage = (((int)((double)page/limitPage+0.9))-1) *limitPage +1;
 		int endPage = startPage+limitPage-1;
 		if(endPage>maxPage) endPage = maxPage;
 		
+		setStartRow((page-1)*limit);
 		setEndPage(endPage);
 		setListCount(listCount);
 		setMaxPage(maxPage);
@@ -32,6 +34,12 @@ public class PageInfo {
 	}
 	public void setPage(int page) {
 		this.page = page;
+	}
+	public int getStartRow() {
+		return startRow;
+	}
+	public void setStartRow(int startRow) {
+		this.startRow = startRow;
 	}
 	public int getMaxPage() {
 		return maxPage;
@@ -56,6 +64,14 @@ public class PageInfo {
 	}
 	public void setListCount(int listCount) {
 		this.listCount = listCount;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 	
 	

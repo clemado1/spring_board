@@ -6,13 +6,17 @@
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 	
 	<security:http auto-config="true" use-expressions="true">
-		<security:form-login login-processing-url="/j_spring_security_check" login-page="/login" default-target-url="/list"
+		<security:form-login login-processing-url="/j_spring_security_check" login-page="/login" default-target-url="/"
             authentication-failure-url="/login?error" username-parameter="username" password-parameter="password"/>
    		<security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login"/>
    		<security:intercept-url pattern="/resources/**" access="permitAll" />
 		<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
 		<security:intercept-url pattern="/write_form" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/write" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/modify" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/modify_form" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/reply" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/comment" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/mypage" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/mod_name" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/mod_pswd" access="hasRole('ROLE_USER')" />

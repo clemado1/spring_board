@@ -50,13 +50,70 @@ body {
 	30px;
 }
 </style>
+<script>
+$(function(){
+    var userId = getCookie("Cookie_userid");
+    $("#j_username").val(userId);
+    
+    if($("#j_username").val() != "")
+        $("#rememberMe").attr("checked", true);
+});
+ 
+function loginProcess(){
+    var id = document.getElementById('j_username');
+    var pw = document.getElementById('j_password');
+    var loginForm = document.getElementById('loginForm');
+    
+    if(id.value==""){
+        alert("이메일을 입력하세요.");
+        id.focus();
+        return false;
+    }else if(pw.value==""){
+        alert("비밀번호를 입력하세요.");
+        pw.focus();
+        return false;
+    }else if($("#rememberMe").is(":checked")){
+        var userId = $("#j_username").val();
+        setCookie("Cookie_userid", userId, 7);
+        loginForm.submit();
+    }else{
+        deleteCookie("Cookie_userid");
+        loginForm.submit();
+    }
+}
+function setCookie(cookieName, value, exdays){
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+    document.cookie = cookieName + "=" + cookieValue;
+}
+function getCookie(cookieName) {
+    cookieName = cookieName + '=';
+    var cookieData = document.cookie;
+    var start = cookieData.indexOf(cookieName);
+    var cookieValue = '';
+    if(start != -1){
+        start += cookieName.length;
+        var end = cookieData.indexOf(';', start);
+        if(end == -1)end = cookieData.length;
+        cookieValue = cookieData.substring(start, end);
+    }
+    return unescape(cookieValue);
+}
+function deleteCookie(cookieName){
+    var expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() - 1);
+    document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+}
+
+</script>
 </head>
 
 <body>
 	<!-- Menu -->
 	<%@ include file="/WEB-INF/views/include/nav.jsp"%>
 	<div class="wrapper">
-		<form class="form-signin"
+		<form class="form-signin" name="loginForm" id="loginForm"
 			action="<c:url value="j_spring_security_check" />" method="post">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
@@ -82,7 +139,7 @@ body {
 			</div>
 			<div class="form-group">
 				<input type="password" id="j_password" name="password"
-					class="form-control" placeholder="Password" required="required">
+					class="form-control" placeholder="Password" required="required" onKeyDown="if(event.keyCode==13)loginProcess()">
 			</div>
 			<span class="pull-right"> <label class="checkbox"> <input
 					type="checkbox" value="remember-me" id="rememberMe"
@@ -92,7 +149,7 @@ body {
 			<p class="text-center">
 				<a href="joinForm">Create an Account</a>
 			</p>
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+			<button class="btn btn-lg btn-primary btn-block" type="button" onclick="loginProcess()">Login</button>
 		</form>
 	</div>
 	<br>

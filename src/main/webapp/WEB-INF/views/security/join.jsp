@@ -157,7 +157,7 @@ function signUp(){
 	<br>
 	<br>
 	<br>
-	<article class="container">
+	<div class="container">
 		<div class="col-md-12">
 			<div class="page-header">
 				<h1>회원가입</h1>
@@ -234,7 +234,7 @@ function signUp(){
 			</form>
 			<hr>
 		</div>
-	</article>
+	</div>
 
 
 

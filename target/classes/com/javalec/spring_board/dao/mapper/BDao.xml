@@ -5,121 +5,180 @@
 
 <mapper namespace="com.javalec.spring_board.dao.BDao">
 	<select id="findBId" resultType="Integer">
-		SELECT MAX(BID) FROM BOARD
+		SELECT IFNULL((SELECT MAX(bid) FROM board),0) FROM DUAL;
 	</select>
 	
 	<select id="findRId" resultType="Integer">
-		SELECT MAX(BID) FROM RBOARD
+		SELECT IFNULL((SELECT MAX(bid) FROM rboard WHERE bgroup = #{param1}),0) FROM DUAL;
 	</select>
 	
 	<select id="listCount" resultType="Integer">
-		SELECT COUNT(*) FROM BOARD
+		SELECT COUNT(*) FROM board
 	</select>
 	
-	<select id="slistCountAll" resultType="Integer">
-		SELECT COUNT(*) FROM BOARD WHERE TITLE LIKE CONCAT('%',#{param1},'%') OR CONTENT LIKE CONCAT('%',#{param1},'%')
+	<select id="monCount" resultType="Integer">
+		SELECT COUNT(*) FROM board WHERE date BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW()
 	</select>
 	
 	<select id="slistCount" resultType="Integer">
-		SELECT COUNT(*) FROM BOARD WHERE #{param1} LIKE CONCAT('%',#{param2},'%')
+		SELECT COUNT(*) FROM board WHERE MATCH(title, content) AGAINST(#{param1})
 	</select>
 	
-	<select id="listDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC LIMIT #{param1},5
+	<select id="tagCount" resultType="Integer" parameterType="String">
+		SELECT COUNT(*) FROM board WHERE bid IN (SELECT bid FROM board_tag WHERE tag_name = #{value})
 	</select>
 	
-	<select id="slistDaoAll" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE TITLE LIKE CONCAT('%',#{param1},'%') OR CONTENT LIKE CONCAT('%',#{param1},'%') ORDER BY BID DESC LIMIT #{param2},5
+	<select id="tagNames" resultType="String">
+		SELECT tag_name FROM board_tag GROUP BY tag_name ORDER BY COUNT(tag_name) DESC LIMIT 20
 	</select>
 	
-	<select id="slistDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50) AS CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD WHERE #{param1} LIKE CONCAT('%',#{param2},'%') ORDER BY BID DESC LIMIT #{param3},5
+	<resultMap id="listResult" type="com.javalec.spring_board.dto.BDto">
+    	<result property="bId" column="bid"/>
+    	<result property="email" column="email"/>
+    	<result property="name" column="name"/>
+    	<result property="title" column="title"/>
+    	<result property="content" column="content"/>
+    	<result property="date" column="date"/>
+    	<result property="hit" column="hit"/>
+    	<result property="bReply" column="breply"/>
+    	<result property="readcount" column="readcount"/>
+    	<collection property="tags" column="bid" javaType="java.util.ArrayList" select="getTagsById"/>
+	</resultMap>
+	 
+	<select id="getTagsById" resultType="String">
+	    SELECT tag_name FROM board_tag WHERE bid = #{bId}
 	</select>
 	
-	<select id="searchList" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT BID, NAME, TITLE, substring(CONTENT,1,50), DATE, HIT, BGROUP, BREPLY, BSTEP FROM BOARD ORDER BY BID DESC
+	<select id="listDao" resultMap="listResult">
+		SELECT bid, name, email, title, date, hit, breply, readcount FROM board_view ORDER BY bid DESC LIMIT #{param1},20
 	</select>
 	
-	<select id="viewDao" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT * FROM BOARD WHERE BID = #{param1}
+	<select id="hotList" resultMap="listResult">
+		SELECT bid, name, email, title, date, hit, breply, readcount FROM board_view ORDER BY bid+((hit+1)*5) DESC LIMIT #{param1},20
+	</select>
+	
+	<select id="monList" resultMap="listResult">
+		SELECT bid, name, email, title, date, hit, breply, readcount FROM board_view WHERE date BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW() ORDER BY hit DESC LIMIT #{param1},20
+	</select>
+	
+	<select id="slistDao" resultMap="listResult">
+		SELECT bid, email, (SELECT name FROM user WHERE email=board.email) AS name, title, substring(content,1,100) AS content, date, hit, breply, readcount FROM board WHERE MATCH(title, content) AGAINST(#{param1}) ORDER BY ${param2} DESC LIMIT #{param3},10
+	</select>
+	
+	<select id="slistRel" resultMap="listResult">
+		SELECT bid, email, (SELECT name FROM user WHERE email=board.email) AS name, title, substring(content,1,100) AS content, date, hit, breply, readcount,
+		MATCH(title, content) AGAINST(#{param1}) AS bstep
+		FROM board WHERE MATCH(title, content) AGAINST(#{param1}) ORDER BY bstep LIMIT #{param2},10
+	</select>
+	
+	<select id="tagList" resultMap="listResult">
+		SELECT bid, name, email, title, substring(content,1,100) AS content, date, hit, breply, readcount FROM board_view WHERE bid IN (SELECT bid FROM board_tag WHERE tag_name = #{param1}) ORDER BY ${param2} DESC LIMIT #{param3},10
+	</select>
+	
+	<select id="randList" resultType="com.javalec.spring_board.dto.BDto">
+		SELECT bid, title FROM board ORDER BY RAND() LIMIT 10
+	</select>
+	
+	<select id="viewDao" resultMap="listResult">
+		SELECT * FROM board_view WHERE BID = #{param1}
 	</select>
 	
 	<select id="viewReply" resultType="com.javalec.spring_board.dto.BDto">
-		SELECT * FROM RBOARD WHERE BGROUP = #{param1} ORDER BY HIT DESC, BREPLY ASC, BSTEP ASC 
+		SELECT * FROM rboard_view WHERE bgroup = #{param1} ORDER BY hit DESC, breply ASC, bstep ASC, bid ASC 
 	</select>
 	
 	<insert id="writeDao">
-		INSERT INTO board VALUES(#{param1}, #{param2}, #{param3}, #{param4}, SYSDATE(), 0, #{param1}, #{param1}, 1)
+		INSERT INTO board VALUES(#{param1}, #{param2}, #{param3}, #{param4}, SYSDATE(), 0, #{param1}, 0, 1, 0)
+	</insert>
+	
+	<insert id="writeTag" parameterType="hashmap">
+		INSERT INTO board_tag 
+		VALUES
+		<foreach collection="tag_list" item="tag" separator=" , ">
+			(#{tag.tag_id}, #{tag.bId}, #{tag.tag_name})
+		</foreach>
 	</insert>
 	
 	<insert id="replyDao">
-		INSERT INTO RBOARD(BID, NAME, CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param1}, 2)
+		INSERT INTO rboard(bid, email, content, date, hit, bgroup, breply, bstep) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param1}, 2)
 	</insert>
 	
 	<insert id="commentDao">
-		INSERT INTO RBOARD(BID, NAME, CONTENT, DATE, HIT, BGROUP, BREPLY, BSTEP) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param5}, 3)
+		INSERT INTO rboard(bid, email, content, date, hit, bgroup, breply, bstep) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param5}, 3)
 	</insert>
 	
+	<update id="upReadcount">
+		UPDATE board SET readcount = readcount + 1 WHERE bid = #{param1}
+	</update>
+	
 	<update id="upHit">
-		UPDATE board SET HIT = HIT + 1 WHERE BID = #{param1}
+		UPDATE board SET hit = hit + 1 WHERE bid = #{param1}
 	</update>
 	
 	<update id="upReply">
-		UPDATE board SET BREPLY = BREPLY + 1 WHERE BID = #{param1}
+		UPDATE board SET breply = breply + 1 WHERE bid = #{param1}
 	</update>
 	
 	<update id="upRHit">
-		UPDATE RBOARD SET HIT = HIT + 1 WHERE BID = #{param1}
+		UPDATE rboard SET hit = hit + 1 WHERE breply = #{param1}
 	</update>
 	
 	<update id="modifyDao">
-		UPDATE board SET TITLE = #{param2}, CONTENT = #{param3} WHERE bid = #{param1}
+		UPDATE board SET title = #{param2}, content = #{param3} WHERE bid = #{param1}
 	</update>
 	
 	<delete id="deleteDao">
 		DELETE FROM board WHERE bid = #{param1}
 	</delete>
 	
+	<delete id="deleteReplyAll">
+		DELETE FROM rboard WHERE bgroup = #{param1}
+	</delete>
+	
 	<delete id="deleteReply">
-		DELETE FROM RBOARD WHERE BGROUP = #{param1}
+		DELETE FROM rboard WHERE bgroup = #{param1} AND bid = #{param2}
+	</delete>
+	
+	<delete id="deleteTag">
+		DELETE FROM board_tag WHERE bid = #{param1}
 	</delete>
 	
 	<!-- user 관련 매핑 -->
 	
 	<select id="testEmail" resultType="Integer">
-		SELECT COUNT(*) FROM USER WHERE EMAIL = #{param1}
+		SELECT COUNT(*) FROM user WHERE email = #{param1}
 	</select>
 	
 	<select id="testName" resultType="Integer">
-		SELECT COUNT(*) FROM USER WHERE NAME = #{param1}
+		SELECT COUNT(*) FROM user WHERE name = #{param1}
 	</select>
 	
 	<select id="signIn" resultType="Integer">
-		SELECT COUNT(*) FROM USER WHERE EMAIL = #{param1} AND PASSWD = #{param2}
+		SELECT COUNT(*) FROM user WHERE email = #{param1} AND passwd = #{param2}
 	</select>
 	
 	<select id="userList" resultType="com.javalec.spring_board.dto.UserDto">
-		SELECT * FROM USER WHERE EMAIL = #{param1}
+		SELECT * FROM user WHERE email = #{param1}
 	</select>
 	
 	<insert id="signUp">
-		INSERT INTO USER(EMAIL, NAME, PASSWD, UDATE, ENABLED) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 1)
+		INSERT INTO user(email, name, passwd, udate, enabled) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 1)
 	</insert>
 	
 	<insert id="signUpRole">
-		INSERT INTO USER_ROLE(EMAIL) VALUES(#{param1})
+		INSERT INTO user_role(email) VALUES(#{param1})
 	</insert>
 	
 	<update id="modName">
-		UPDATE USER SET NAME = #{param2) WHERE UID = #{param1}
+		UPDATE user SET name = #{param2) WHERE uid = #{param1}
 	</update>
 	
 	<update id="modPass">
-		UPDATE USER SET PASSWD = #{param2) WHERE UID = #{param1}
+		UPDATE user SET passwd = #{param2) WHERE uid = #{param1}
 	</update>
 	
 	<delete id="deleteUser">
-		DELETE FROM USER WHERE UID = #{param1}
+		DELETE FROM user WHERE uid = #{param1}
 	</delete>
 	
 </mapper>
