@@ -179,7 +179,7 @@ public class BController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		dao.writeDao(bId, auth.getName(), 
 				request.getParameter("title"), 
-				request.getParameter("content").replaceAll("\r\n", "<br>"));
+				request.getParameter("content").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\r\n", "<br>"));
 		
 		if(request.getParameter("tags")!=null&&!request.getParameter("tags").equals("")) {
 			String[] tag_arry = request.getParameter("tags").split(",");
@@ -238,7 +238,7 @@ public class BController {
 		BDao dao = sqlSession.getMapper(BDao.class);
 		int bId = Integer.parseInt(request.getParameter("bId"));
 		dao.modifyDao(bId, request.getParameter("title"), 
-				request.getParameter("content").replaceAll("\r\n", "<br>"));
+				request.getParameter("content").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\r\n", "<br>"));
 		dao.deleteTag(bId);
 		if(request.getParameter("tags")!=null) {
 			String[] tag_arry = request.getParameter("tags").split(",");
@@ -265,7 +265,7 @@ public class BController {
 		int bId = dao.findRId(bGroup);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		dao.replyDao(bId+1, auth.getName(), 
-				request.getParameter("content").replaceAll("\r\n", "<br>"),bGroup);
+				request.getParameter("content").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\r\n", "<br>"), bGroup);
 		dao.upReply(Integer.parseInt(request.getParameter("bId")));
 		
 		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
@@ -286,8 +286,8 @@ public class BController {
 		int bId = dao.findRId(bGroup);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		dao.commentDao(bId+1, auth.getName(), 
-				request.getParameter("content"), bGroup, 
-				Integer.parseInt(request.getParameter("rId")));
+				request.getParameter("txt_commen").replaceAll("<", "&lt;").replaceAll(">", "&gt;"), 
+				bGroup, Integer.parseInt(request.getParameter("rId")));
 		
 		return "redirect:view?id="+Integer.parseInt(request.getParameter("bId"));
 	}

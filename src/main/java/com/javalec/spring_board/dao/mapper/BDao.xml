@@ -104,7 +104,7 @@
 	</insert>
 	
 	<insert id="commentDao">
-		INSERT INTO rboard(bid, email, content, date, hit, bgroup, breply, bstep) VALUES(#{param1}, #{param2}, #{param3}, SYSDATE(), 0, #{param4}, #{param5}, 3)
+		INSERT INTO rboard(bid, email, content, date, hit, bgroup, breply, bstep) SELECT #{param1}, #{param2}, #{param3}, SYSDATE(), hit, #{param4}, #{param5}, 3 FROM rboard WHERE bgroup= #{param4} AND breply=#{param5} AND bstep=2
 	</insert>
 	
 	<update id="upReadcount">

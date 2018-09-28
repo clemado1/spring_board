@@ -146,6 +146,25 @@ function signUp(){
     
     $("#joinForm")[0].submit();
 }
+$(function () {
+    $("#email").keyup(function () {
+    	
+        if (emailck == 1) {
+        	emailck = 0;
+            $('#emailResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
+            return false;
+        }
+    });
+    
+	$("#name").keyup(function () {
+	    	
+        if (nameck == 1) {
+        	nameck = 0;
+            $('#nameResult').html("<font color='red'>중복확인을 눌러주세요.</font>");
+            return false;
+        }
+    });
+});
 </script>
 </head>
 

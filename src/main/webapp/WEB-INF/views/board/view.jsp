@@ -63,6 +63,16 @@
 		}
  }
 
+ $(function () {
+	    $("[name=txt_commen]").keypress(function (e) {
+	        var code = (e.keyCode ? e.keyCode : e.which);
+
+	        if (code == 13) {
+	          	this.form.submit();
+	            return true;
+	        }
+	    });
+	});
  </script>
   </head>
 
@@ -117,14 +127,14 @@
             </div>
           </div>
           <div class="al-right" id="commen${reply.bId }" style="display:none;">
-              <form action="comment" method="post">
+              <form action="comment" id="form_commen${reply.bId }" method="post">
               <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
               <input type="hidden" name="bId" value="${board.bId}">
               <input type="hidden" name="rId" value="${reply.bId}">
                 <div class="form-group">
-                  <textarea class="form-control" name="content" rows="1"></textarea>
+                	<input type="text" class="form-control" name="txt_commen">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" id="sub_commen" class="btn btn-primary">Submit</button>
               </form>
             </div>
             
@@ -168,6 +178,7 @@
     <%@ include file="/WEB-INF/views/include/footer.jsp" %>
     
      <!-- Bootstrap core JavaScript -->
+    <script src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
 </body>
 </html>
