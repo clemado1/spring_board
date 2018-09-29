@@ -73,6 +73,26 @@
 	        }
 	    });
 	});
+ $(function(){
+		$("#reply-ta").on("keyup",function(){
+			var byteTxt = "";
+			var byte = function(str){
+				var byteNum=0;
+				for(i=0;i<str.length;i++){
+					byteNum+=(str.charCodeAt(i)>127)?2:1;
+					if(byteNum<1000){
+						byteTxt+=str.charAt(i);
+					};
+				};
+				return Math.round( byteNum/2 );
+			};
+			if(byte($("#content").val())>500){
+				alert("500자 이상 입력할수 없습니다.");
+				$("#reply-ta").val("");
+				$("#reply-ta").val(byteTxt);
+			}
+		});
+	});
  </script>
   </head>
 
