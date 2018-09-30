@@ -52,7 +52,8 @@ body {
 </style>
 <script>
 $(function(){
-    var userId = getCookie("Cookie_userid");
+	var userId = getCookie("Cookie_userid");
+	alert(userId);
     $("#j_username").val(userId);
     
     if($("#j_username").val() != "")
@@ -60,9 +61,8 @@ $(function(){
 });
  
 function loginProcess(){
-    var id = document.getElementById('j_username');
-    var pw = document.getElementById('j_password');
-    var loginForm = document.getElementById('loginForm');
+    var id = $("#j_username").val();
+    var pw = $("#j_password").val();
     
     if(id.value==""){
         alert("이메일을 입력하세요.");
@@ -72,17 +72,18 @@ function loginProcess(){
         alert("비밀번호를 입력하세요.");
         pw.focus();
         return false;
-    }else if($("#rememberMe").is(":checked")){
-        var userId = $("#j_username").val();
-        setCookie("Cookie_userid", userId, 7);
-        loginForm.submit();
+    }
+    
+    if($("#rememberMe")[0].checked){
+    	setCookie("Cookie_userid", id, 7);
+        $("#loginForm").submit();
     }else{
-        deleteCookie("Cookie_userid");
-        loginForm.submit();
+    	deleteCookie("Cookie_userid");
+        $("#loginForm").submit();
     }
 }
 function setCookie(cookieName, value, exdays){
-    var exdate = new Date();
+	var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
     var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
     document.cookie = cookieName + "=" + cookieValue;

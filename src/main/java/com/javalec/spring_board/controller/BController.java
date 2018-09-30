@@ -188,7 +188,7 @@ public class BController {
 			for(int i = 0; i < tag_arry.length; i++) {
 				if(cnt>=5) break;
 				cnt++;
-				if(!tag_arry[i].trim().equals("")) tag_list.add(new TagDto(i+1, bId, tag_arry[i].trim().replaceAll(" ", "_")));
+				if(!tag_arry[i].trim().equals("")) tag_list.add(new TagDto(i+1, bId, tag_arry[i].trim().toLowerCase().replaceAll(" ", "_")));
 			}
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("bid", bId);
@@ -238,7 +238,7 @@ public class BController {
 		BDao dao = sqlSession.getMapper(BDao.class);
 		int bId = Integer.parseInt(request.getParameter("bId"));
 		dao.modifyDao(bId, request.getParameter("title"), 
-				request.getParameter("content").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\r\n", "<br>"));
+				request.getParameter("content").replaceAll("<", "&lt;").replaceAll(">", "&gt;").toLowerCase().replaceAll("\r\n", "<br>"));
 		dao.deleteTag(bId);
 		if(request.getParameter("tags")!=null) {
 			String[] tag_arry = request.getParameter("tags").split(",");
